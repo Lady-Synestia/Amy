@@ -21,10 +21,12 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('hi amy!'):
+    if message.content.lower().startswith('hi amy'):
         if message.author.id == MY_UID:
             await message.channel.send(f'hi mum!! >.<')
         else:
             await message.channel.send(f'hiiii <@{message.author.id}>! >//w//<')
+    elif "bye" in message.content.lower():
+        await message.channel.send("byeeeee!!")
 
 client.run(BOT_TOKEN)
