@@ -1,5 +1,5 @@
 """
-Handling amy's memory
+Handling Amy's memory
 """
 
 import discord
