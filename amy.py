@@ -25,6 +25,6 @@ async def on_message(message):
         if message.author.id == MY_UID:
             await message.channel.send(f'hi mum!! >.<')
         else:
-            await message.channel.send(f'hiiii {message.author.display_name}! >//w//<')
+            await message.channel.send(f'hiiii <@{message.author.id}>! >//w//<')
 
 client.run(BOT_TOKEN)
