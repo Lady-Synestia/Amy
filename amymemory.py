@@ -22,12 +22,12 @@ class AmyMemory:
 
         self.__remembered_interactions += [
             {
-                "role": "user",
-                "content": message.content
+                "role": "developer",
+                "content": f"{message.created_at} {message.author.display_name} said: {message.content}"
             },
             {
-                "role": "assistant",
-                "content": response
+                "role": "developer",
+                "content": f"{message.created_at} your response to {message.author.display_name} was: {response}"
             }
         ]
 

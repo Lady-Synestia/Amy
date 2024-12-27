@@ -37,7 +37,7 @@ class AmyDiscord(discord.Client):
     async def on_message(self, message: discord.message):
         if message.author == self.user:
             return
-        if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == self.__AMY_CHANNEL_ID or ( message.channel.id == self.__MC_CHANNEL_ID and message.author.display_name == "Noelle"):
+        if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == self.__AMY_CHANNEL_ID:
             await self.__message_callback(message)
 
     async def send_message(self, channel: discord.Message.channel, message: str):

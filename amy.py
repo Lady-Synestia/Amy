@@ -24,16 +24,10 @@ class Amy:
     async def handle_discord_message(self, message: discord.Message):
         self.__amy_logger.log_message(message)
 
-        content = ""
-
-        if message.author.display_name == "Noelle":
-            content += "Message from the minecraft server: "
-        content += message.content
-
         input_messages = self.__amy_memory.memories + [
             {
                 "role": "user",
-                "content": content
+                "content": message.content
             }
         ]
 
