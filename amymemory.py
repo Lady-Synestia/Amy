@@ -23,15 +23,11 @@ class AmyMemory:
         self.__remembered_interactions += [
             {
                 "role": "developer",
-                "content": f"{message.created_at} {message.author.display_name} said: {message.content}"
-            },
-            {
-                "role": "developer",
-                "content": f"{message.created_at} your response to {message.author.display_name} was: {response}"
+                "content": f"{message.author.display_name} said: {message.content} | your response was: was: {response}"
             }
         ]
 
-        if len(self.__remembered_interactions) > 20:
+        if len(self.__remembered_interactions) > 10:
             self.__remembered_interactions.pop(0)
 
         self.__memory_count = len(self.__remembered_interactions)

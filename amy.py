@@ -20,6 +20,9 @@ class Amy:
         self.__amy_discord.custom_status = self.__amy_gpt.get_new_status()
         self.__amy_logger.log_startup()
         self.__amy_discord.start_client(self.handle_discord_message)
+        wakeup_message = self.__amy_discord.wakeup_message()
+        # self.__amy_discord.send_message()
+
 
     async def handle_discord_message(self, message: discord.Message):
         self.__amy_logger.log_message(message)
@@ -31,8 +34,9 @@ class Amy:
             }
         ]
 
-        response = self.__amy_gpt.make_request(input_messages)
+        async with message.channel.typing():
+            response = self.__amy_gpt.make_request(input_messages)
+            await self.__amy_discord.send_message(message.channel, response)
 
-        await self.__amy_discord.send_message(message.channel, response)
         self.__amy_logger.log_response(message, response)
         self.__amy_memory.remember_interaction(message, response)
