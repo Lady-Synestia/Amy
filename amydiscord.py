@@ -7,6 +7,8 @@ from discord import app_commands
 import os
 from dotenv import load_dotenv
 from amylogging import AmyLogger
+import amydiscordcommands
+
 
 class AmyDiscord(discord.Client):
     def __init__(self, logger: AmyLogger):
@@ -15,6 +17,7 @@ class AmyDiscord(discord.Client):
         self.__AMY_CHANNEL_ID = int(os.getenv("AMY_CHANNEL"))
         self.__MC_CHANNEL_ID = int(os.getenv("MC_CHANNEL"))
         self.__BOT_TOKEN = os.getenv("BOT_TOKEN")
+        self.__AMY_GUILD_ID = int(os.getenv("AMY_GUILD"))
 
         self.__amy_logger = logger
 
@@ -22,6 +25,8 @@ class AmyDiscord(discord.Client):
         intents = discord.Intents.default()
         intents.message_content = True
         super().__init__(intents=intents)
+
+        self.__tree = app_commands.CommandTree(self)
 
         # function callback for on_message event
         self.__message_callback = None
@@ -33,12 +38,17 @@ class AmyDiscord(discord.Client):
         self.__message_callback = message_callback
         self.__custom_status = custom_status
         self.__wakeup_message = wakeup_message
+
+        self.__tree.add_command(amydiscordcommands.test, guild=discord.Object(id=self.__AMY_GUILD_ID))
+
         self.run(self.__BOT_TOKEN)
 
     async def on_ready(self):
         """
         Discord client event: called when bot is ready
         """
+        await self.__tree.sync(guild=discord.Object(id=self.__AMY_GUILD_ID))
+
         await self.change_presence(activity=discord.CustomActivity(self.__custom_status))
         self.__amy_logger.log_status(self.__custom_status)
         channel = self.get_partial_messageable(self.__AMY_CHANNEL_ID)
