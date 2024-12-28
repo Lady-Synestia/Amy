@@ -25,10 +25,6 @@ class AmyDiscord(discord.Client):
         self.__custom_status = ""
         self.__wakeup_message = ""
 
-    @property
-    def my_uid(self):
-        return self.__MY_UID
-
     def start_client(self, message_callback, custom_status, wakeup_message):
         self.__message_callback = message_callback
         self.__custom_status = custom_status
@@ -44,7 +40,10 @@ class AmyDiscord(discord.Client):
         if message.author == self.user:
             return
         if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == self.__AMY_CHANNEL_ID:
-            await self.__message_callback(message)
+            if message.author.id == self.__MY_UID:
+                await self.__message_callback(message, role="developer")
+            else:
+                await self.__message_callback(message)
 
     async def send_message(self, channel: discord.Message.channel, message: str):
         await channel.send(message)

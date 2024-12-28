@@ -22,12 +22,12 @@ class Amy:
         wakeup_message = self.__amy_gpt.wakeup_message()
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
-    async def handle_discord_message(self, message: discord.Message):
+    async def handle_discord_message(self, message: discord.Message, role: str = "user"):
         self.__amy_logger.log_message(message)
 
         input_messages = self.__amy_memory.memories + [
             {
-                "role": "user",
+                "role": role,
                 "content": message.content
             }
         ]
@@ -38,3 +38,4 @@ class Amy:
 
         self.__amy_logger.log_response(message, response)
         self.__amy_memory.remember_interaction(message, response)
+
