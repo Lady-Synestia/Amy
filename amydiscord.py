@@ -4,18 +4,19 @@ Handling Amy's Discord presence
 
 import discord
 from discord import app_commands
-import asyncio
 import os
 from dotenv import load_dotenv
-
+from amylogging import AmyLogger
 
 class AmyDiscord(discord.Client):
-    def __init__(self):
+    def __init__(self, logger: AmyLogger):
         load_dotenv()
         self.__MY_UID = int(os.getenv("MY_UID"))
         self.__AMY_CHANNEL_ID = int(os.getenv("AMY_CHANNEL"))
         self.__MC_CHANNEL_ID = int(os.getenv("MC_CHANNEL"))
         self.__BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+        self.__amy_logger = logger
 
         # setting up bot intents
         intents = discord.Intents.default()
@@ -24,9 +25,6 @@ class AmyDiscord(discord.Client):
 
         # function callback for on_message event
         self.__message_callback = None
-
-        self.__custom_status = ""
-        self.__wakeup_message = ""
 
     def start_client(self, message_callback, custom_status, wakeup_message):
         """
@@ -57,17 +55,19 @@ class AmyDiscord(discord.Client):
             return
 
         # ensures message meets required parameters for amy to respond
-        # * TODO: improve this and store parameters in a smarter way
+        # TODO: improve this and store parameters in a smarter way
         if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == self.__AMY_CHANNEL_ID:
+            self.__amy_logger.log_user_message(message)
             await self.__message_callback(message)
 
-    async def send_message(self, channel: discord.Message.channel | discord.PartialMessageable, message: str):
+    async def send_message(self, channel: discord.TextChannel | discord.PartialMessageable | discord.DMChannel | discord.GroupChannel, message: str):
         """
         Allows Amy to send a message
         :param channel: the channel to respond in
         :param message: message to send
         """
         await channel.send(message)
+        self.__amy_logger.log_amy_message(channel, message)
 
     async def reply(self, message: discord.Message, content: str):
         """
@@ -76,3 +76,4 @@ class AmyDiscord(discord.Client):
         :param content: contents of the reply
         """
         await message.reply(content)
+        self.__amy_logger.log_amy_reply(message, content)

@@ -15,11 +15,12 @@ class Amy:
         """
         Initialising Amy's subcomponents
         """
-        self.__amy_memory = AmyMemory()
-        self.__amy_discord = AmyDiscord()
-        self.__amy_gpt = AmyGPT()
         self.__amy_logger = AmyLogger()
         atexit.register(self.__amy_logger.log_quit)
+
+        self.__amy_memory = AmyMemory()
+        self.__amy_discord = AmyDiscord(self.__amy_logger)
+        self.__amy_gpt = AmyGPT(self.__amy_logger)
 
     def activate(self):
         """
@@ -32,12 +33,11 @@ class Amy:
 
     async def handle_discord_message(self, message: discord.Message, role: str = "user"):
         """
-        Handles link between discord and the openai api
+        Handles link between discord and the openai api. called by discord client's on_message callback
 
         :param message: discord.Message object to replay as gpt message content
         :param role: role to use for gpt message role ("user", "assistant", or "developer")
         """
-        self.__amy_logger.log_user_message(message)
 
         # collecting amy's stored messages with the new message
         input_messages = self.__amy_memory.memories + [
@@ -50,9 +50,8 @@ class Amy:
         # plays the discord typing animation while waiting for a response from the api
         async with message.channel.typing():
             response = self.__amy_gpt.make_request(input_messages)
-            await self.__amy_discord.send_message(message.channel, response)
+            await self.__amy_discord.reply(message, response)
 
-        # logs message and saves it to amy's memory
-        self.__amy_logger.log_amy_reply(message, response)
+        # saves message to amy's memory
         self.__amy_memory.remember_interaction(message, response)
 
