@@ -23,7 +23,7 @@ class AmyMemory:
         self.__remembered_interactions += [
             {
                 "role": "developer",
-                "content": f"{message.author.display_name} said: {message.content} | your response was: was: {response}"
+                "content": f"{message.author.display_name} said: {message.content} | you responded with: {response}"
             }
         ]
 
