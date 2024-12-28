@@ -17,12 +17,10 @@ class Amy:
         self.__amy_gpt = AmyGPT()
 
     def activate(self):
-        self.__amy_discord.custom_status = self.__amy_gpt.get_new_status()
         self.__amy_logger.log_startup()
-        self.__amy_discord.start_client(self.handle_discord_message)
-        wakeup_message = self.__amy_discord.wakeup_message()
-        # self.__amy_discord.send_message()
-
+        custom_status = self.__amy_gpt.get_new_status()
+        wakeup_message = self.__amy_gpt.wakeup_message()
+        self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
     async def handle_discord_message(self, message: discord.Message):
         self.__amy_logger.log_message(message)

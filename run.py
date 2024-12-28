@@ -3,7 +3,12 @@ runs Amy
 """
 
 from amy import Amy
+import asyncio
 
-if __name__ == "__main__":
+
+def main():
     amy = Amy()
     amy.activate()
+
+if __name__ == "__main__":
+    main()

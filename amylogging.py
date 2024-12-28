@@ -32,3 +32,7 @@ class AmyLogger:
     def log_response(self, message: discord.Message, response: str):
         log = f"{self.__time_format()} [RESPONSE] [{message.channel}] Amy responded to {message.author.display_name}: {response}"
         self.__write_log(log)
+
+    def log_own_message(self, channel: discord.PartialMessageable, message: str):
+        log = f"{self.__time_format()} [MESSAGE ] [{channel.name}] Amy sent: {message}"
+        self.__write_log(log)
