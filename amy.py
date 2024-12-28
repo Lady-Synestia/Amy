@@ -1,5 +1,7 @@
 """
 Amy's controlling class
+
+Handles communication between Amy's subcomponents
 """
 import discord
 import atexit
@@ -10,21 +12,34 @@ from amymemory import AmyMemory
 
 class Amy:
     def __init__(self):
-        self.__amy_logger = AmyLogger()
-        atexit.register(self.__amy_logger.log_quit)
+        """
+        Initialising Amy's subcomponents
+        """
         self.__amy_memory = AmyMemory()
         self.__amy_discord = AmyDiscord()
         self.__amy_gpt = AmyGPT()
+        self.__amy_logger = AmyLogger()
+        atexit.register(self.__amy_logger.log_quit)
 
     def activate(self):
+        """
+        Starts logging and wakes up discord client
+        """
         self.__amy_logger.log_startup()
         custom_status = self.__amy_gpt.get_new_status()
         wakeup_message = self.__amy_gpt.wakeup_message()
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
     async def handle_discord_message(self, message: discord.Message, role: str = "user"):
-        self.__amy_logger.log_message(message)
+        """
+        Handles link between discord and the openai api
 
+        :param message: discord.Message object to replay as gpt message content
+        :param role: role to use for gpt message role ("user", "assistant", or "developer")
+        """
+        self.__amy_logger.log_user_message(message)
+
+        # collecting amy's stored messages with the new message
         input_messages = self.__amy_memory.memories + [
             {
                 "role": role,
@@ -32,10 +47,12 @@ class Amy:
             }
         ]
 
+        # plays the discord typing animation while waiting for a response from the api
         async with message.channel.typing():
             response = self.__amy_gpt.make_request(input_messages)
             await self.__amy_discord.send_message(message.channel, response)
 
-        self.__amy_logger.log_response(message, response)
+        # logs message and saves it to amy's memory
+        self.__amy_logger.log_amy_reply(message, response)
         self.__amy_memory.remember_interaction(message, response)
 

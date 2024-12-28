@@ -7,19 +7,26 @@ import discord
 
 class AmyMemory:
     def __init__(self):
-        self.__memory_count = 0
+        # stores all the messages that amy remembers
         self.__remembered_interactions = []
 
     @property
-    def memories(self):
+    def memories(self) -> list[dict[str,str]]:
+        """
+        :return: A copy of the list of Amy's memories
+        """
         return self.__remembered_interactions
 
     @property
     def memory_count(self):
-        return self.__memory_count
+        """
+        :return: Number of memories Amy has
+        """
+        return len(self.__remembered_interactions)
 
     def remember_interaction(self, message: discord.Message, response: str):
 
+        # Custom prompt to help openai api understand the memory context
         self.__remembered_interactions += [
             {
                 "role": "developer",
@@ -27,9 +34,8 @@ class AmyMemory:
             }
         ]
 
-        if len(self.__remembered_interactions) > 5:
+        # caps stored memory, ensures tokens/message doesn't get too high
+        if self.memory_count > 5:
             self.__remembered_interactions.pop(0)
-
-        self.__memory_count = len(self.__remembered_interactions)
 
 
