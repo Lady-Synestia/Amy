@@ -26,6 +26,7 @@ class AmyDiscord(discord.Client):
         intents.message_content = True
         super().__init__(intents=intents)
 
+        # stores application commands to be synced with discord
         self.__tree = app_commands.CommandTree(self)
 
         # function callback for on_message event
@@ -39,6 +40,8 @@ class AmyDiscord(discord.Client):
         self.__custom_status = custom_status
         self.__wakeup_message = wakeup_message
 
+        # adding application commands to be synced with discord
+        # guild/guilds must be satisfied for commands to be registered straight away
         self.__tree.add_command(amydiscordcommands.test, guild=discord.Object(id=self.__AMY_GUILD_ID))
 
         self.run(self.__BOT_TOKEN)
