@@ -27,7 +27,7 @@ class AmyMemory:
             }
         ]
 
-        if len(self.__remembered_interactions) > 10:
+        if len(self.__remembered_interactions) > 5:
             self.__remembered_interactions.pop(0)
 
         self.__memory_count = len(self.__remembered_interactions)
