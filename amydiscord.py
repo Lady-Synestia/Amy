@@ -39,8 +39,8 @@ class AmyDiscord(discord.Client):
         """
         Discord client event: called when bot is ready
         """
-
         await self.change_presence(activity=discord.CustomActivity(self.__custom_status))
+        self.__amy_logger.log_status(self.__custom_status)
         channel = self.get_partial_messageable(self.__AMY_CHANNEL_ID)
         await self.send_message(channel, self.__wakeup_message)
 
@@ -75,5 +75,5 @@ class AmyDiscord(discord.Client):
         :param message: discord.Message object to reply to
         :param content: contents of the reply
         """
-        await message.reply(content)
+        await message.reply(content, mention_author=False)
         self.__amy_logger.log_amy_reply(message, content)

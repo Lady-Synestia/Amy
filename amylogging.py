@@ -5,23 +5,28 @@ Handling Amy's logging
 import time
 import discord
 
+
 class AmyLogger:
-    def __init__(self):
-        self.__log_file = "Logs\\amy.log"
+    @staticmethod
+    def time_format(mode: str = "line") -> str:
+        """
+        defines the format time should be recorded with in the logs
+        can format time for lines or filenames
+        :return: string containing the current, formatted time
+        """
+        match mode:
+            case "line":
+                return f"[{time.strftime('%Y-%m-%d %H.%M.%S', time.localtime())}] "
+            case "file":
+                return f"{time.strftime('%d-%m-%y', time.localtime())}"
 
     def __write_log(self, line: str):
+        log_file = f"Logs\\{self.time_format(mode='file')}.log"
         # prints log to console and appends it to the logging file
         line = self.time_format() + line
         print(line)
-        with open(self.__log_file, "a", encoding="utf-8") as log:
+        with open(log_file, "a", encoding="utf-8") as log:
             log.write("\n" + line)
-
-    def time_format(self) -> str:
-        """
-        defines the format time should be recorded with in the logs
-        :return: string containing the current, formatted time
-        """
-        return f"[{time.strftime('%Y-%m-%d %H.%M.%S', time.localtime())}] "
 
     def log_startup(self):
         """
@@ -35,6 +40,10 @@ class AmyLogger:
         logs quit event, called when the program closes
         """
         log = f"[STATUS  ] *yawns* Amy is going to sleep -.-"
+        self.__write_log(log)
+
+    def log_status(self, activity: str):
+        log = f"[ACTIVITY] Amy set her activity to: {activity}"
         self.__write_log(log)
 
     def log_user_message(self, message: discord.Message):

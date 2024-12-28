@@ -25,7 +25,7 @@ class AmyGPT:
         ]
 
         # prompt to get Amy to generate a new custom status
-        self.__STATUS_PROMPT = f"discord status' are usually a few words long, containing a funny reference or joke, and don't have speech marks around them, your current one is: ✨ plotting world domination >w< ✨, would you like to change it? send your status and nothing else"
+        self.__STATUS_PROMPT = f"discord status' are usually a few words long, containing a funny reference or joke, and don't have speech marks around them, would you like to change it? send your status and nothing else"
 
         # prompt for Amy's startup message
         self.__WAKEUP_PROMPT = "You've just woken up, what would you like to say to all of your friends?"
