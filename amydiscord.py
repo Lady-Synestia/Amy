@@ -61,7 +61,7 @@ class AmyDiscord(discord.Client):
         await self.change_presence(activity=discord.CustomActivity(self.__custom_status))
         self.__amy_logger.log_status(self.__custom_status)
         channel = self.get_partial_messageable(self.__AMY_CHANNEL_ID)
-        await self.send_message(channel, self.__wakeup_message)
+        await self.send_message(channel,self.__wakeup_message)
 
     async def on_message(self, message: discord.message):
         """
@@ -77,7 +77,7 @@ class AmyDiscord(discord.Client):
         # TODO: improve this and store parameters in a smarter way
         if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == self.__AMY_CHANNEL_ID:
             self.__amy_logger.log_user_message(message)
-            await self.__message_callback(message)
+            await self.__message_callback(message, vc = (message.channel.id == self.__AMY_VC_ID))
 
     async def send_message(self, channel: discord.TextChannel | discord.PartialMessageable | discord.DMChannel | discord.GroupChannel, message: str):
         """

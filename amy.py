@@ -11,6 +11,7 @@ from amylogging import AmyLogger
 from amymemory import AmyMemory
 import amydiscordcommands
 
+
 class Amy:
     def __init__(self):
         """
@@ -37,7 +38,7 @@ class Amy:
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
-    async def handle_discord_message(self, message: discord.Message, role: str = "user"):
+    async def handle_discord_message(self, message: discord.Message, role: str = "user", vc: bool = False):
         """
         Handles link between discord and the openai api. called by discord client's on_message callback
 
@@ -57,14 +58,17 @@ class Amy:
         async with message.channel.typing():
             response = self.__amy_gpt.make_chat_request(input_messages)
             await self.__amy_discord.reply(message, response)
+        if vc:
+            await self.handle_speech(response)
 
         # saves message to amy's memory
         self.__amy_memory.remember_interaction(message, response)
 
     async def handle_join(self, voice_client) -> None:
         self.__amy_discord.current_voice_client = voice_client
+        wakeup_message = self.__amy_gpt.wakeup_message()
+        await self.handle_speech(wakeup_message)
 
     async def handle_speech(self, input: str) -> None:
         file_path = self.__amy_gpt.make_voice_request(input)
         await self.__amy_discord.say(file_path)
-

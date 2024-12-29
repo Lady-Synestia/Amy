@@ -2,6 +2,11 @@
 Storing Amy's discord application commands
 """
 from discord import app_commands, Interaction
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+MY_UID = int(os.getenv("MY_UID"))
 
 join_callback = None
 speech_callback = None
@@ -17,21 +22,25 @@ async def test(interaction: Interaction):
 test: app_commands.command()
 
 
-
-
 @app_commands.command()
 async def join(interaction: Interaction):
     """
     causes Amy to join a voice channel
     """
-    vc = await interaction.channel.connect()
-    await join_callback(vc)
-    await interaction.response.send_message("connected!")
+    if (interaction.user.id == MY_UID):
+        vc = await interaction.channel.connect()
+        await join_callback(vc)
+        await interaction.response.send_message("connected!")
+    else:
+        await interaction.response.send_message("Sorry, you aren't able to use that command")
 join: app_commands.command()
 
 
 @app_commands.command()
 async def say(interaction: Interaction, to_say: str):
-    await speech_callback(to_say)
-    await interaction.response.send_message(f"said: {to_say}")
+    if (interaction.user.id == MY_UID):
+        await speech_callback(to_say)
+        await interaction.response.send_message(f"said: {to_say}")
+    else:
+        await interaction.response.send_message("Sorry, you aren't able to use that command")
 say: app_commands.command()
