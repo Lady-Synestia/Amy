@@ -31,10 +31,12 @@ class Amy:
         self.__amy_logger.log_startup()
         custom_status = self.__amy_gpt.get_new_status()
         wakeup_message = self.__amy_gpt.wakeup_message()
+        print(wakeup_message)
 
         # binds handle speech to callback for join command
         amycommands.join_callback = self.handle_join
-        amycommands.speech_callback = self.handle_speech
+        amycommands.say_callback = self.handle_speech
+        amycommands.leave_callback = self.handle_leave
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
@@ -44,6 +46,7 @@ class Amy:
 
         :param message: discord.Message object to replay as gpt message content
         :param role: role to use for gpt message role ("user", "assistant", or "developer")
+        :param vc: if the bot is connected to a voice channel or not
         """
 
         # collecting amy's stored messages with the new message
@@ -65,14 +68,20 @@ class Amy:
         # saves message to amy's memory
         self.__amy_memory.remember_interaction(message, response)
 
-    async def handle_join(self, voice_client) -> None:
+    async def handle_join(self, vc: discord.VoiceClient) -> None:
         """
         Says a wakeup message when amy joins a voice channel
-        :param voice_client: voice client connected to
+        :param vc: voice client connected to
         """
-        self.__amy_discord.current_voice_client = voice_client
+        self.__amy_discord.call_joined(vc)
         wakeup_message = self.__amy_gpt.wakeup_message()
         await self.handle_speech(wakeup_message)
+
+    async def handle_leave(self) -> None:
+        """
+        Disconnects amy from a voice call
+        """
+        await self.__amy_discord.leave_call()
 
     async def handle_speech(self, to_say: str) -> None:
         """
