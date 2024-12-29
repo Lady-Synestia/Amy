@@ -12,7 +12,6 @@ join_callback = None
 speech_callback = None
 
 
-
 @app_commands.command()
 async def test(interaction: Interaction):
     """

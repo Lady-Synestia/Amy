@@ -4,22 +4,13 @@ Handling Amy's Discord presence
 
 import discord
 from discord import app_commands
-import os
-from dotenv import load_dotenv
 from amylogging import AmyLogger
 import amycommands
-import io
+from amyconfig import AMY_CHANNEL, BOT_TOKEN, AMY_GUILD, VC_CHANNEL
+
 
 class AmyDiscord(discord.Client):
     def __init__(self, logger: AmyLogger):
-        load_dotenv()
-        self.__MY_UID = int(os.getenv("MY_UID"))
-        self.__AMY_CHANNEL_ID = int(os.getenv("AMY_CHANNEL"))
-        self.__MC_CHANNEL_ID = int(os.getenv("MC_CHANNEL"))
-        self.__BOT_TOKEN = os.getenv("BOT_TOKEN")
-        self.__AMY_GUILD_ID = int(os.getenv("AMY_GUILD"))
-        self.__AMY_VC_ID = int(os.getenv("VC_CHANNEL"))
-
         self.__amy_logger = logger
 
         # setting up bot intents
@@ -46,21 +37,21 @@ class AmyDiscord(discord.Client):
 
         # adding application commands to be synced with discord
         # guild/guilds must be satisfied for commands to be registered straight away
-        self.__tree.add_command(amycommands.test, guild=discord.Object(id=self.__AMY_GUILD_ID))
-        self.__tree.add_command(amycommands.join, guild=discord.Object(id=self.__AMY_GUILD_ID))
-        self.__tree.add_command(amycommands.say, guild=discord.Object(id=self.__AMY_GUILD_ID))
+        self.__tree.add_command(amycommands.test, guild=discord.Object(id=AMY_GUILD))
+        self.__tree.add_command(amycommands.join, guild=discord.Object(id=AMY_GUILD))
+        self.__tree.add_command(amycommands.say, guild=discord.Object(id=AMY_GUILD))
 
-        self.run(self.__BOT_TOKEN)
+        self.run(BOT_TOKEN)
 
     async def on_ready(self):
         """
         Discord client event: called when bot is ready
         """
-        await self.__tree.sync(guild=discord.Object(id=self.__AMY_GUILD_ID))
+        await self.__tree.sync(guild=discord.Object(id=AMY_GUILD))
 
         await self.change_presence(activity=discord.CustomActivity(self.__custom_status))
         self.__amy_logger.log_status(self.__custom_status)
-        channel = self.get_partial_messageable(self.__AMY_CHANNEL_ID)
+        channel = self.get_partial_messageable(AMY_CHANNEL)
         await self.send_message(channel,self.__wakeup_message)
 
     async def on_message(self, message: discord.message):
@@ -75,9 +66,9 @@ class AmyDiscord(discord.Client):
 
         # ensures message meets required parameters for amy to respond
         # TODO: improve this and store parameters in a smarter way
-        if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == self.__AMY_CHANNEL_ID:
+        if 'amy' in message.content.lower() or message.channel.type == discord.ChannelType.private or message.channel.id == AMY_CHANNEL:
             self.__amy_logger.log_user_message(message)
-            await self.__message_callback(message, vc = (message.channel.id == self.__AMY_VC_ID))
+            await self.__message_callback(message, vc = (message.channel.id == VC_CHANNEL))
 
     async def send_message(self, channel: discord.TextChannel | discord.PartialMessageable | discord.DMChannel | discord.GroupChannel, message: str):
         """
@@ -97,6 +88,7 @@ class AmyDiscord(discord.Client):
         await message.reply(content, mention_author=False)
         self.__amy_logger.log_amy_reply(message, content)
 
-    async def say(self, file_path: str) -> None:
+    async def say(self, file_path: str, transcript: str) -> None:
         source = discord.FFmpegPCMAudio(executable="C:\\ffmpeg\\bin\\ffmpeg.exe", source=file_path)
         self.current_voice_client.play(source)
+        self.__amy_logger.log_speech(self.current_voice_client.channel, transcript)

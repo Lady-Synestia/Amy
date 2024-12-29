@@ -72,6 +72,15 @@ class AmyLogger:
         log = f"[MESSAGE ] [{channel.guild}] [{channel.id}] Amy sent: {message}"
         self.__write_log(log)
 
+    def log_speech(self, channel: discord.VoiceChannel, message: str) -> None:
+        """
+        log something Amy said
+        :param channel: voice channel Amy spoke in
+        :param message: what Amy said
+        """
+        log = f"[SPEECH  ] [{channel.guild}] [{channel}] Amy said: {message}"
+        self.__write_log(log)
+
     def log_token_usage(self, prompt_tokens: int, completion_tokens: int) -> None:
         """
         logs completion token usage

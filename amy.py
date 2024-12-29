@@ -59,17 +59,25 @@ class Amy:
             response = self.__amy_gpt.make_chat_request(input_messages)
             await self.__amy_discord.reply(message, response)
         if vc:
-            await self.handle_speech(response)
+            ...
+            # await self.handle_speech(response)
 
         # saves message to amy's memory
         self.__amy_memory.remember_interaction(message, response)
 
     async def handle_join(self, voice_client) -> None:
+        """
+        Says a wakeup message when amy joins a voice channel
+        :param voice_client: voice client connected to
+        """
         self.__amy_discord.current_voice_client = voice_client
         wakeup_message = self.__amy_gpt.wakeup_message()
         await self.handle_speech(wakeup_message)
 
-    async def handle_speech(self, input: str) -> None:
-        return
-        # file_path = self.__amy_gpt.make_voice_request(input)
-        # await self.__amy_discord.say(file_path)
+    async def handle_speech(self, to_say: str) -> None:
+        """
+        Gets a speech message from openai api, says it in the voice channel
+        :param to_say: what Amy should say
+        """
+        file_path = self.__amy_gpt.make_voice_request(to_say)
+        await self.__amy_discord.say(file_path, to_say)
