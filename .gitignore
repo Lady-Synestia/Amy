@@ -1,5 +1,5 @@
-.env
-config.yaml
-.idea
-Logs
-Speech
+/.idea
+/Logs
+/Speech
+/Configs
+/.env

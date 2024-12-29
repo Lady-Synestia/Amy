@@ -11,7 +11,7 @@ import time
 # gpt prompts
 class __Prompts():
     def __init__(self):
-        with open("config.yaml", 'r') as file:
+        with open("Configs\\config.yaml", 'r') as file:
             configs = yaml.safe_load(file)
             self.__prompts = configs['Prompts']
 
@@ -32,11 +32,15 @@ class __Prompts():
         time_format = f"{time.strftime('%H:%M, %d/%m, %Y', time.localtime())}"
         return self.__prompts["time"].format(time_format)
 
+    @property
+    def weight(self) -> str:
+        return self.__prompts["weight"]
+
 
 # bot permissions
 class __Permissions():
     def __init__(self):
-        with open("config.yaml", 'r') as file:
+        with open("Configs\\config.yaml", 'r') as file:
             configs = yaml.safe_load(file)
             self.__permissions = configs['Permissions']
 
