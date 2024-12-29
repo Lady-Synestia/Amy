@@ -9,7 +9,7 @@ from amygpt import AmyGPT
 from amydiscord import AmyDiscord
 from amylogging import AmyLogger
 from amymemory import AmyMemory
-import amydiscordcommands
+import amycommands
 
 
 class Amy:
@@ -33,8 +33,8 @@ class Amy:
         wakeup_message = self.__amy_gpt.wakeup_message()
 
         # binds handle speech to callback for join command
-        amydiscordcommands.join_callback = self.handle_join
-        amydiscordcommands.speech_callback = self.handle_speech
+        amycommands.join_callback = self.handle_join
+        amycommands.speech_callback = self.handle_speech
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
@@ -70,5 +70,6 @@ class Amy:
         await self.handle_speech(wakeup_message)
 
     async def handle_speech(self, input: str) -> None:
-        file_path = self.__amy_gpt.make_voice_request(input)
-        await self.__amy_discord.say(file_path)
+        return
+        # file_path = self.__amy_gpt.make_voice_request(input)
+        # await self.__amy_discord.say(file_path)

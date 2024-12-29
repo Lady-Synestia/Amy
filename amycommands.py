@@ -29,8 +29,8 @@ async def join(interaction: Interaction):
     """
     if (interaction.user.id == MY_UID):
         vc = await interaction.channel.connect()
-        await join_callback(vc)
         await interaction.response.send_message("connected!")
+        await join_callback(vc)
     else:
         await interaction.response.send_message("Sorry, you aren't able to use that command")
 join: app_commands.command()

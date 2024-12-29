@@ -7,7 +7,7 @@ from discord import app_commands
 import os
 from dotenv import load_dotenv
 from amylogging import AmyLogger
-import amydiscordcommands
+import amycommands
 import io
 
 class AmyDiscord(discord.Client):
@@ -46,9 +46,9 @@ class AmyDiscord(discord.Client):
 
         # adding application commands to be synced with discord
         # guild/guilds must be satisfied for commands to be registered straight away
-        self.__tree.add_command(amydiscordcommands.test, guild=discord.Object(id=self.__AMY_GUILD_ID))
-        self.__tree.add_command(amydiscordcommands.join, guild=discord.Object(id=self.__AMY_GUILD_ID))
-        self.__tree.add_command(amydiscordcommands.say, guild=discord.Object(id=self.__AMY_GUILD_ID))
+        self.__tree.add_command(amycommands.test, guild=discord.Object(id=self.__AMY_GUILD_ID))
+        self.__tree.add_command(amycommands.join, guild=discord.Object(id=self.__AMY_GUILD_ID))
+        self.__tree.add_command(amycommands.say, guild=discord.Object(id=self.__AMY_GUILD_ID))
 
         self.run(self.__BOT_TOKEN)
 
