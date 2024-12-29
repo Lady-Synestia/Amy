@@ -59,13 +59,14 @@ class AmyDiscord(discord.Client):
         await channel.send(message)
         self.__amy_logger.log_amy_message(channel, message)
 
-    async def reply(self, message: discord.Message, content: str):
+    async def reply(self, message: discord.Message, content: str, mention: bool = False):
         """
         Allows Amy to reply to a message
         :param message: discord.Message object to reply to
         :param content: contents of the reply
+        :param mention: whether to mention the user or not, defaults to False
         """
-        await message.reply(content, mention_author=True)
+        await message.reply(content, mention_author=mention)
         self.__amy_logger.log_amy_reply(message, content)
 
     async def say(self, file_path: str, transcript: str) -> None:
