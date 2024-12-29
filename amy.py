@@ -69,7 +69,7 @@ class Amy:
         # plays the discord typing animation while waiting for a response from the api
         async with message.channel.typing():
             response = self.__amy_gpt.make_chat_request(input_messages)
-            await self.__amy_discord.reply(message, response)
+            await self.__amy_discord.send_message(message.channel, response)
         if vc:
             ...
             # await self.handle_speech(response)
