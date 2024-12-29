@@ -91,7 +91,7 @@ class AmyDiscord(discord.Client):
         await self.change_presence(activity=discord.CustomActivity(self.__custom_status))
         self.__amy_logger.log_status(self.__custom_status)
         channel = self.get_partial_messageable(permissions.text_channels[0])
-        await self.send_message(channel, self.__wakeup_message)
+        # await self.send_message(channel, self.__wakeup_message)
 
     async def on_message(self, message: discord.message):
         """
