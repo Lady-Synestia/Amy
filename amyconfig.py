@@ -60,6 +60,10 @@ class __Permissions():
     def users(self) -> list[int]:
         return self.__permissions["users"]
 
+    @property
+    def ignore(self) -> list[int]:
+        return self.__permissions["ignore"]
+
 
 # environment variables
 load_dotenv()

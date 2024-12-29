@@ -100,7 +100,7 @@ class AmyDiscord(discord.Client):
         """
 
         # prevents Amy from responding to her own messages
-        if message.author == self.user:
+        if message.author == self.user or message.channel.id in permissions.ignore:
             return
 
         await self.__message_callback(message)
