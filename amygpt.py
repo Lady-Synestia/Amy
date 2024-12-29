@@ -58,7 +58,6 @@ class AmyGPT:
             temperature=0.5
         )
         self.__amy_logger.log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
-        print(completion.choices[0].message.content)
         return float(completion.choices[0].message.content)
 
     def make_chat_request(self, input_messages: list[dict[str, str]]) -> str | None:

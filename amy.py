@@ -39,11 +39,6 @@ class Amy:
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
-    async def handle_weight_request(self, message):
-        self.__amy_logger.log_user_message(message)
-        weight = self.__amy_gpt.make_weight_request(message.content)
-        ...
-
     async def handle_discord_message(self, message: discord.Message, role: str = "user", vc: bool = False):
         """
         Handles link between discord and the openai api. called by discord client's on_message callback
@@ -54,8 +49,13 @@ class Amy:
         """
 
         weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 50 else message.content[:50])
-        if weight < 0.7:
-            return
+        self.__amy_logger.log_weight(message.content, weight)
+        # ensures message meets required parameters for amy to respond
+        if weight < 0.6:
+            if not (self.__amy_discord.user in message.mentions or
+                    message.channel.type == discord.ChannelType.private or
+                    (message.reference.cached_message.author == self.__amy_discord.user if message.reference else False)):
+                return
 
         self.__amy_logger.log_user_message(message)
 

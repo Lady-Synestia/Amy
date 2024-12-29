@@ -89,3 +89,12 @@ class AmyLogger:
         """
         log = f"[TOKENS  ] prompt tokens: {prompt_tokens} | completion tokens: {completion_tokens}"
         self.__write_log(log)
+
+    def log_weight(self, content: str, weight: float) -> None:
+        """
+        logs weight of checked message
+        :param content: content of message
+        :param weight: weight calculated
+        """
+        log = f"[WEIGHT  ] Message: \"{content}\" returned with weight: {weight}"
+        self.__write_log(log)
