@@ -31,7 +31,6 @@ class Amy:
         self.__amy_logger.log_startup()
         custom_status = self.__amy_gpt.get_new_status()
         wakeup_message = self.__amy_gpt.wakeup_message()
-        print(wakeup_message)
 
         # binds handle speech to callback for join command
         amycommands.join_callback = self.handle_join
@@ -39,6 +38,11 @@ class Amy:
         amycommands.leave_callback = self.handle_leave
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
+
+    async def handle_weight_request(self, message):
+        self.__amy_logger.log_user_message(message)
+        weight = self.__amy_gpt.make_weight_request(message.content)
+        ...
 
     async def handle_discord_message(self, message: discord.Message, role: str = "user", vc: bool = False):
         """
@@ -48,6 +52,12 @@ class Amy:
         :param role: role to use for gpt message role ("user", "assistant", or "developer")
         :param vc: if the bot is connected to a voice channel or not
         """
+
+        weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 50 else message.content[:50])
+        if weight < 0.7:
+            return
+
+        self.__amy_logger.log_user_message(message)
 
         # collecting amy's stored messages with the new message
         input_messages = self.__amy_memory.memories + [
@@ -60,7 +70,7 @@ class Amy:
         # plays the discord typing animation while waiting for a response from the api
         async with message.channel.typing():
             response = self.__amy_gpt.make_chat_request(input_messages)
-            await self.__amy_discord.reply(message, response)
+            await self.__amy_discord.send_message(message.channel, response)
         if vc:
             ...
             # await self.handle_speech(response)

@@ -15,6 +15,8 @@ class AmyGPT:
 
         self.__system_message = self.completion_message("developer", prompts.system)
 
+        self.__weight_message = self.completion_message("developer", prompts.weight)
+
         # initialises api client
         self.__client = OpenAI(api_key=API_KEY)
 
@@ -42,6 +44,22 @@ class AmyGPT:
         """
         input_messages = [self.completion_message("developer", prompts.wakeup)]
         return self.make_chat_request(input_messages)
+
+    def make_weight_request(self, message: str) -> float:
+        """
+        Makes a request to the api for a weight, used to determine how likely Amy is to reply to a message
+        :return: the weight as a float
+        """
+        message_list = [self.__weight_message, self.completion_message("user", message)]
+
+        completion = self.__client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=message_list,
+            temperature=0.5
+        )
+        self.__amy_logger.log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
+        print(completion.choices[0].message.content)
+        return float(completion.choices[0].message.content)
 
     def make_chat_request(self, input_messages: list[dict[str, str]]) -> str | None:
         """

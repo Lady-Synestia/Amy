@@ -103,10 +103,12 @@ class AmyDiscord(discord.Client):
         if message.author == self.user:
             return
 
+        await self.__message_callback(message)
+
         # ensures message meets required parameters for amy to respond
-        if (self.user in message.mentions or
-                message.channel.type == discord.ChannelType.private or
-                message.channel.id in permissions.text_channels or
-                (message.reference.cached_message.author == self.user if message.reference else False)):
-            self.__amy_logger.log_user_message(message)
-            await self.__message_callback(message, vc=(message.channel.id == permissions.voice_channels[0]))
+        # if (self.user in message.mentions or
+        #         message.channel.type == discord.ChannelType.private or
+        #         message.channel.id in permissions.text_channels or
+        #         (message.reference.cached_message.author == self.user if message.reference else False)):
+        #     self.__amy_logger.log_user_message(message)
+        #     await self.__message_callback(message, vc=(message.channel.id == permissions.voice_channels[0]))
