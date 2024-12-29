@@ -39,11 +39,11 @@ class AmyLogger:
         """
         logs quit event, called when the program closes
         """
-        log = f"[STATUS   ] *yawns* Amy is going to sleep -.-"
+        log = f"[STATUS  ] *yawns* Amy is going to sleep -.-"
         self.__write_log(log)
 
     def log_status(self, activity: str) -> None:
-        log = f"[ACTIVITY ] Amy set her activity to: {activity}"
+        log = f"[ACTIVITY] Amy set her activity to: {activity}"
         self.__write_log(log)
 
     def log_user_message(self, message: discord.Message) -> None:
@@ -51,7 +51,7 @@ class AmyLogger:
         logs message sent by a user that amy will respond to
         :param message: discord.Message object containing the message
         """
-        log = f"[MESSAGE  ] [{message.guild}] [{message.channel}] {message.author.display_name} sent: {message.content}"
+        log = f"[MESSAGE ] [{message.guild}] [{message.channel}] {message.author.display_name} sent: {message.content}"
         self.__write_log(log)
 
     def log_amy_reply(self, message: discord.Message, response: str) -> None:
@@ -60,7 +60,7 @@ class AmyLogger:
         :param message: discord.Message object containing the message replied to
         :param response: content of Amy's response
         """
-        log = f"[REPLY    ] [{message.guild}] [{message.channel}] Amy replied to {message.author.display_name} : {response}"
+        log = f"[REPLY   ] [{message.guild}] [{message.channel}] Amy replied to {message.author.display_name} : {response}"
         self.__write_log(log)
 
     def log_amy_message(self, channel: discord.PartialMessageable, message: str) -> None:
@@ -69,7 +69,7 @@ class AmyLogger:
         :param channel: discord.PartialMessageable object, constructed from channel id
         :param message: message Amy sent
         """
-        log = f"[MESSAGE  ] [{channel.guild}] [{channel.id}] Amy sent: {message}"
+        log = f"[MESSAGE ] [{channel.guild}] [{channel.id}] Amy sent: {message}"
         self.__write_log(log)
 
     def log_token_usage(self, prompt_tokens: int, completion_tokens: int) -> None:

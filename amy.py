@@ -9,6 +9,7 @@ from amygpt import AmyGPT
 from amydiscord import AmyDiscord
 from amylogging import AmyLogger
 from amymemory import AmyMemory
+import amydiscordcommands
 
 class Amy:
     def __init__(self):
@@ -29,6 +30,11 @@ class Amy:
         self.__amy_logger.log_startup()
         custom_status = self.__amy_gpt.get_new_status()
         wakeup_message = self.__amy_gpt.wakeup_message()
+
+        # binds handle speech to callback for join command
+        amydiscordcommands.join_callback = self.handle_join
+        amydiscordcommands.speech_callback = self.handle_speech
+
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
     async def handle_discord_message(self, message: discord.Message, role: str = "user"):
@@ -49,9 +55,16 @@ class Amy:
 
         # plays the discord typing animation while waiting for a response from the api
         async with message.channel.typing():
-            response = self.__amy_gpt.make_request(input_messages)
+            response = self.__amy_gpt.make_chat_request(input_messages)
             await self.__amy_discord.reply(message, response)
 
         # saves message to amy's memory
         self.__amy_memory.remember_interaction(message, response)
+
+    async def handle_join(self, voice_client) -> None:
+        self.__amy_discord.current_voice_client = voice_client
+
+    async def handle_speech(self, input: str) -> None:
+        file_path = self.__amy_gpt.make_voice_request(input)
+        await self.__amy_discord.say(file_path)
 

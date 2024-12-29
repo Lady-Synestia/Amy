@@ -34,6 +34,8 @@ class AmyGPT:
         # initialises api client
         self.__client = OpenAI(api_key=self.__API_KEY)
 
+        self.__speech_file_path = "Speech\\speech.mp3"
+
     def get_new_status(self) -> str:
         """
         Makes a request to the api for a new custom status
@@ -45,7 +47,7 @@ class AmyGPT:
                 "content": self.__STATUS_PROMPT
             }
         ]
-        return self.make_request(input_message)
+        return self.make_chat_request(input_message)
 
     def wakeup_message(self) -> str:
         """
@@ -58,7 +60,7 @@ class AmyGPT:
                 "content": self.__WAKEUP_PROMPT
             }
         ]
-        return self.make_request(input_message)
+        return self.make_chat_request(input_message)
 
     def __time_message(self) -> list[dict[str, str]]:
         """
@@ -73,7 +75,7 @@ class AmyGPT:
         ]
         return input_message
 
-    def make_request(self, input_messages: list) -> str:
+    def make_chat_request(self, input_messages: list) -> str:
         """
         makes a request to the openai api
         :param input_messages: list containing messages to send
@@ -92,3 +94,12 @@ class AmyGPT:
         )
         self.__amy_logger.log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
         return completion.choices[0].message.content
+
+    def make_voice_request(self, input: str) -> str:
+        response = self.__client.audio.speech.create(
+            model="tts-1",
+            voice="nova",
+            input=input
+        )
+        response.stream_to_file(self.__speech_file_path)
+        return self.__speech_file_path

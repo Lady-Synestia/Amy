@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 from amylogging import AmyLogger
 import amydiscordcommands
-
+import io
 
 class AmyDiscord(discord.Client):
     def __init__(self, logger: AmyLogger):
@@ -18,12 +18,14 @@ class AmyDiscord(discord.Client):
         self.__MC_CHANNEL_ID = int(os.getenv("MC_CHANNEL"))
         self.__BOT_TOKEN = os.getenv("BOT_TOKEN")
         self.__AMY_GUILD_ID = int(os.getenv("AMY_GUILD"))
+        self.__AMY_VC_ID = int(os.getenv("VC_CHANNEL"))
 
         self.__amy_logger = logger
 
         # setting up bot intents
         intents = discord.Intents.default()
         intents.message_content = True
+        intents.voice_states = True
         super().__init__(intents=intents)
 
         # stores application commands to be synced with discord
@@ -31,6 +33,8 @@ class AmyDiscord(discord.Client):
 
         # function callback for on_message event
         self.__message_callback = None
+
+        self.current_voice_client = None
 
     def start_client(self, message_callback, custom_status, wakeup_message):
         """
@@ -43,6 +47,8 @@ class AmyDiscord(discord.Client):
         # adding application commands to be synced with discord
         # guild/guilds must be satisfied for commands to be registered straight away
         self.__tree.add_command(amydiscordcommands.test, guild=discord.Object(id=self.__AMY_GUILD_ID))
+        self.__tree.add_command(amydiscordcommands.join, guild=discord.Object(id=self.__AMY_GUILD_ID))
+        self.__tree.add_command(amydiscordcommands.say, guild=discord.Object(id=self.__AMY_GUILD_ID))
 
         self.run(self.__BOT_TOKEN)
 
@@ -90,3 +96,7 @@ class AmyDiscord(discord.Client):
         """
         await message.reply(content, mention_author=False)
         self.__amy_logger.log_amy_reply(message, content)
+
+    async def say(self, file_path: str) -> None:
+        source = discord.FFmpegPCMAudio(executable="C:\\ffmpeg\\bin\\ffmpeg.exe", source=file_path)
+        self.current_voice_client.play(source)
