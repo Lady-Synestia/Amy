@@ -25,7 +25,6 @@ class AmyMemory:
         return len(self.__remembered_interactions)
 
     def remember_interaction(self, message: discord.Message, response: str):
-
         # Custom prompt to help openai api understand the memory context
         self.__remembered_interactions += [
             {
@@ -37,5 +36,3 @@ class AmyMemory:
         # caps stored memory, ensures tokens/message doesn't get too high
         if self.memory_count > 5:
             self.__remembered_interactions.pop(0)
-
-

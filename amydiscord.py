@@ -65,7 +65,7 @@ class AmyDiscord(discord.Client):
         :param message: discord.Message object to reply to
         :param content: contents of the reply
         """
-        await message.reply(content, mention_author=False)
+        await message.reply(content, mention_author=True)
         self.__amy_logger.log_amy_reply(message, content)
 
     async def say(self, file_path: str, transcript: str) -> None:

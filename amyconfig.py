@@ -1,7 +1,6 @@
 """
 Stores and abstracts Amy's configurable values
 """
-import dataclasses
 import os
 from dotenv import load_dotenv
 import yaml

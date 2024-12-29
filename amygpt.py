@@ -10,7 +10,6 @@ from amyconfig import API_KEY, prompts
 
 class AmyGPT:
     def __init__(self, logger: AmyLogger):
-
         self.__amy_logger = logger
 
         self.__system_message = self.completion_message("developer", prompts.system)

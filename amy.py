@@ -51,7 +51,7 @@ class Amy:
         weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 50 else message.content[:50])
         self.__amy_logger.log_weight(message.content, weight)
         # ensures message meets required parameters for amy to respond
-        if not (weight >= 0.6 or self.__amy_discord.user in message.mentions or
+        if not (abs(weight) >= 0.6 or self.__amy_discord.user in message.mentions or
                 message.channel.type == discord.ChannelType.private or
                 (message.reference.cached_message.author == self.__amy_discord.user if message.reference else False)):
             return
@@ -69,7 +69,7 @@ class Amy:
         # plays the discord typing animation while waiting for a response from the api
         async with message.channel.typing():
             response = self.__amy_gpt.make_chat_request(input_messages)
-            await self.__amy_discord.send_message(message.channel, response)
+            await self.__amy_discord.reply(message, response)
         if vc:
             ...
             # await self.handle_speech(response)
