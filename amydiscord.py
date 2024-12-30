@@ -4,7 +4,7 @@ Handling Amy's Discord presence
 
 import discord
 from discord import app_commands
-from amylogging import AmyLogger
+import amylogging as log
 import amycommands
 from typing import Callable
 from amyconfig import BOT_TOKEN, permissions
@@ -15,12 +15,11 @@ class AmyDiscord(discord.Client):
     __wakeup_message: str
 
     __message_callback: Callable
+    __status_callback: Callable
 
     __voice_client: discord.VoiceClient | None
 
-    def __init__(self, logger: AmyLogger):
-        self.__amy_logger = logger
-
+    def __init__(self):
         # setting up bot intents
         intents = discord.Intents.default()
         intents.message_content = True
@@ -45,8 +44,22 @@ class AmyDiscord(discord.Client):
         self.__tree.add_command(amycommands.say, guilds=my_guilds)
         self.__tree.add_command(amycommands.leave, guilds=my_guilds)
         self.__tree.add_command(amycommands.echo, guilds=my_guilds)
+        self.__tree.add_command(amycommands.activity, guilds=my_guilds)
 
         self.run(BOT_TOKEN)
+
+    async def set_activity(self, status: str, activity_type: discord.ActivityType | None = None, ) -> None:
+        """
+        sets Amy's activity, can be custom or have a type
+        :param status: activity status or name
+        :param activity_type: type of activity, if none will be a custom activity
+        """
+        self.__custom_status = status
+        if activity_type is not None:
+            await self.change_presence(activity=discord.Activity(type=activity_type, name=status))
+        else:
+            await self.change_presence(activity=discord.CustomActivity(status))
+        log.log_status(self.__custom_status)
 
     async def send_message(
             self,
@@ -58,7 +71,7 @@ class AmyDiscord(discord.Client):
         :param message: message to send
         """
         await channel.send(message)
-        self.__amy_logger.log_amy_message(channel, message)
+        log.log_amy_message(channel, message)
 
     async def reply(self, message: discord.Message, content: str, mention: bool = False):
         """
@@ -68,13 +81,13 @@ class AmyDiscord(discord.Client):
         :param mention: whether to mention the user or not, defaults to False
         """
         await message.reply(content, mention_author=mention)
-        self.__amy_logger.log_amy_reply(message, content)
+        log.log_amy_reply(message, content)
 
     async def say(self, file_path: str, transcript: str) -> None:
         if self.__voice_client is not None:
             source = discord.FFmpegPCMAudio(executable="C:\\ffmpeg\\bin\\ffmpeg.exe", source=file_path)
             self.__voice_client.play(source)
-            self.__amy_logger.log_speech(self.__voice_client.channel, transcript)
+            log.log_speech(self.__voice_client.channel, transcript)
 
     def call_joined(self, vc: discord.VoiceClient):
         self.__voice_client = vc
@@ -90,9 +103,8 @@ class AmyDiscord(discord.Client):
         """
         await self.__tree.sync(guild=discord.Object(id=permissions.guilds[0]))
 
-        await self.change_presence(activity=discord.CustomActivity(self.__custom_status))
-        self.__amy_logger.log_status(self.__custom_status)
-        channel = self.get_partial_messageable(permissions.text_channels[0])
+        await self.set_activity(self.__custom_status)
+        # channel = self.get_partial_messageable(permissions.text_channels[0])
         # await self.send_message(channel, self.__wakeup_message)
 
     async def on_message(self, message: discord.message):
@@ -106,11 +118,3 @@ class AmyDiscord(discord.Client):
             return
 
         await self.__message_callback(message)
-
-        # ensures message meets required parameters for amy to respond
-        # if (self.user in message.mentions or
-        #         message.channel.type == discord.ChannelType.private or
-        #         message.channel.id in permissions.text_channels or
-        #         (message.reference.cached_message.author == self.user if message.reference else False)):
-        #     self.__amy_logger.log_user_message(message)
-        #     await self.__message_callback(message, vc=(message.channel.id == permissions.voice_channels[0]))

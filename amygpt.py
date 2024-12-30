@@ -2,16 +2,13 @@
 Handling Amy's GPT-4o-mini completions
 """
 
-import time
 from openai import OpenAI
-from amylogging import AmyLogger
+from amylogging import log_token_usage
 from amyconfig import API_KEY, prompts
 
 
 class AmyGPT:
-    def __init__(self, logger: AmyLogger):
-        self.__amy_logger = logger
-
+    def __init__(self):
         self.__system_message = self.completion_message("developer", prompts.system)
 
         self.__weight_message = self.completion_message("developer", prompts.weight)
@@ -56,7 +53,7 @@ class AmyGPT:
             messages=message_list,
             temperature=0.5
         )
-        self.__amy_logger.log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
+        log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
         return float(completion.choices[0].message.content)
 
     def make_chat_request(self, input_messages: list[dict[str, str]]) -> str | None:
@@ -81,7 +78,7 @@ class AmyGPT:
             frequency_penalty=2,
             max_completion_tokens=64
         )
-        self.__amy_logger.log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
+        log_token_usage(completion.usage.prompt_tokens, completion.usage.completion_tokens)
         return completion.choices[0].message.content
 
     def make_voice_request(self, to_say: str) -> str:
