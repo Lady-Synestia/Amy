@@ -4,17 +4,17 @@ Handling Amy's GPT-4o-mini completions
 
 from openai import OpenAI
 from amylogging import log_token_usage
-from amyconfig import API_KEY, prompts
+from amyconfig import open_ai_configs as configs
 
 
 class AmyGPT:
     def __init__(self):
-        self.__system_message = self.completion_message("developer", prompts.system)
+        self.__system_message = self.completion_message("developer", configs.system_prompt)
 
-        self.__weight_message = self.completion_message("developer", prompts.weight)
+        self.__weight_message = self.completion_message("developer", configs.weight_prompt)
 
         # initialises api client
-        self.__client = OpenAI(api_key=API_KEY)
+        self.__client = OpenAI(api_key=configs.api_key)
 
         self.__speech_file_path = "Speech\\speech.mp3"
 
@@ -30,7 +30,7 @@ class AmyGPT:
         Makes a request to the api for a new custom status
         :return: the new status as a string
         """
-        input_messages = [self.completion_message("user", prompts.status)]
+        input_messages = [self.completion_message("user", configs.status_prompt)]
         return self.make_chat_request(input_messages)
 
     def wakeup_message(self) -> (str, str):
@@ -38,7 +38,7 @@ class AmyGPT:
         Makes a new request to the api for a 'greeting' to send when the discord client is activated
         :return: the message as a string
         """
-        input_messages = [self.completion_message("developer", prompts.wakeup)]
+        input_messages = [self.completion_message("developer", configs.wakeup_prompt)]
         return self.make_chat_request(input_messages)
 
     def make_weight_request(self, message: str) -> float:
@@ -68,8 +68,8 @@ class AmyGPT:
         if len(input_messages) == 0:
             return
 
-        time_message = self.completion_message("developer", prompts.time)
-        message_list = [self.__system_message, time_message] + input_messages
+        # time_message = self.completion_message("developer", prompts.time)
+        message_list = [self.__system_message] + input_messages
 
         # uses gpt-4o-mini for text completions
         completion = self.__client.chat.completions.create(

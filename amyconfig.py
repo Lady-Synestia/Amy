@@ -6,74 +6,79 @@ from dotenv import load_dotenv
 import yaml
 import time
 
+load_dotenv()
+
 
 # gpt prompts
-class __Prompts():
+class __OpenAIConfigs:
     def __init__(self):
-        with open("Configs\\config.yaml", 'r') as file:
+        self.__API_KEY = os.getenv("OPENAI_API_KEY")
+        with open("Configs/openai.yaml", 'r') as file:
             configs = yaml.safe_load(file)
-            self.__prompts = configs['Prompts']
+            self.__prompts = configs['prompts']
 
     @property
-    def system(self) -> str:
+    def api_key(self):
+        return self.__API_KEY
+
+    @property
+    def system_prompt(self) -> str:
         return self.__prompts["system"]
 
     @property
-    def status(self) -> str:
+    def status_prompt(self) -> str:
         return self.__prompts["status"]
 
     @property
-    def wakeup(self) -> str:
+    def wakeup_prompt(self) -> str:
         return self.__prompts["wakeup"]
 
     @property
-    def time(self) -> str:
+    def time_prompt(self) -> str:
         time_format = f"{time.strftime('%H:%M, %d/%m, %Y', time.localtime())}"
         return self.__prompts["time"].format(time_format)
 
     @property
-    def weight(self) -> str:
+    def weight_prompt(self) -> str:
         return self.__prompts["weight"]
 
 
 # bot permissions
-class __Permissions():
+class __DiscordConfigs:
     def __init__(self):
-        with open("Configs\\config.yaml", 'r') as file:
+        self.__BOT_TOKEN = os.getenv("BOT_TOKEN")
+        with open("Configs/discord.yaml", 'r') as file:
             configs = yaml.safe_load(file)
-            self.__permissions = configs['Permissions']
+            self.__permissions = configs['permissions']
 
     @property
-    def guilds(self) -> list[int]:
+    def bot_token(self):
+        return self.__BOT_TOKEN
+
+    @property
+    def allowed_guilds(self) -> list[int]:
         return self.__permissions["guilds"]
 
     @property
-    def text_channels(self) -> list[int]:
+    def allowed_text_channels(self) -> list[int]:
         return self.__permissions["text_channels"]
 
     @property
-    def voice_channels(self) -> list[int]:
+    def allowed_voice_channels(self) -> list[int]:
         return self.__permissions["voice_channels"]
 
     @property
-    def users(self) -> list[int]:
+    def allowed_channels(self) -> list[int]:
+        return self.__permissions["text_channels"] + self.__permissions["voice_channels"]
+
+    @property
+    def authorised_users(self) -> list[int]:
         return self.__permissions["users"]
 
     @property
-    def ignore(self) -> list[int]:
+    def ignored_ids(self) -> list[int]:
         return self.__permissions["ignore"]
 
 
-# environment variables
-load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-API_KEY = os.getenv("OPENAI_API_KEY")
-
-prompts = __Prompts()
-permissions = __Permissions()
-
-
-
-
-
-
+open_ai_configs = __OpenAIConfigs()
+discord_configs = __DiscordConfigs()

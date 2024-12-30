@@ -39,7 +39,6 @@ class Amy:
         amycommands.activity_callback = self.handle_activity_update
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
-        self.update_activity.start()
 
     async def handle_discord_message(self, message: discord.Message, role: str = "user", vc: bool = False):
         """
@@ -50,7 +49,7 @@ class Amy:
         :param vc: if the bot is connected to a voice channel or not
         """
 
-        weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 50 else message.content[:50])
+        weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 25 else message.content[:25])
         log.log_weight(message.content, weight)
         # ensures message meets required parameters for amy to respond
         if not (abs(weight) >= 0.6 or self.__amy_discord.user in message.mentions or

@@ -4,7 +4,7 @@ Storing Amy's discord application commands
 import discord
 from discord import app_commands, Interaction
 from typing import Callable
-from amyconfig import permissions
+from amyconfig import discord_configs as configs
 from amylogging import log_command
 
 
@@ -28,7 +28,7 @@ async def auth_check(interaction: Interaction) -> bool:
     :return: true if user is authorised
     """
     try:
-        if interaction.user.id in permissions.users:
+        if interaction.user.id in configs.authorised_users:
             return True
         else:
             raise UnAuthorizedUserException
