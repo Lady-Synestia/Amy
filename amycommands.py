@@ -119,3 +119,20 @@ async def activity(interaction: Interaction, custom: str = None) -> None:
         if activity_callback is not None:
             await activity_callback(custom)
             await respond(interaction, f"updated activity!")
+
+
+r: app_commands.command()
+r_callback: Callable
+
+
+@app_commands.command(description="Changes Amy's response threshold")
+async def r(interaction: Interaction, value: float | None) -> None:
+    """
+    Changes Amy's response threshold, resets it if no value is given
+    :param value: value to set R to, float between -1 and 1
+    """
+    if await auth_check(interaction):
+        log_command(interaction, "R", value)
+        if r_callback is not None:
+            value = r_callback(value)
+            await respond(interaction, f"Updated response threshold: {value}")

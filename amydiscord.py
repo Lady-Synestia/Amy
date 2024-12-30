@@ -45,6 +45,7 @@ class AmyDiscord(discord.Client):
         self.__tree.add_command(amycommands.leave, guilds=my_guilds)
         self.__tree.add_command(amycommands.echo, guilds=my_guilds)
         self.__tree.add_command(amycommands.activity, guilds=my_guilds)
+        self.__tree.add_command(amycommands.r, guilds=my_guilds)
 
         self.run(configs.bot_token)
 
@@ -116,7 +117,7 @@ class AmyDiscord(discord.Client):
         # prevents Amy from responding to her own messages
         if (message.author == self.user or
                 message.channel.id in configs.ignored_ids or
-                message.user.id in configs.ignored_ids):
+                message.author.id in configs.ignored_ids):
             return
 
         await self.__message_callback(message)

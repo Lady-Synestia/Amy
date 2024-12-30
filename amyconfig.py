@@ -50,6 +50,7 @@ class __DiscordConfigs:
         with open("Configs/discord.yaml", 'r') as file:
             configs = yaml.safe_load(file)
             self.__permissions = configs['permissions']
+            self.__R = configs['response_threshold']
 
     @property
     def bot_token(self):
@@ -78,6 +79,10 @@ class __DiscordConfigs:
     @property
     def ignored_ids(self) -> list[int]:
         return self.__permissions["ignore"]
+
+    @property
+    def response_threshold(self) -> int:
+        return self.__R
 
 
 open_ai_configs = __OpenAIConfigs()

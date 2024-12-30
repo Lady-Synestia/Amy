@@ -11,6 +11,7 @@ from amydiscord import AmyDiscord
 from amymemory import AmyMemory
 import amylogging as log
 import amycommands
+from amyconfig import discord_configs
 
 
 class Amy:
@@ -22,6 +23,8 @@ class Amy:
         self.__amy_memory = AmyMemory()
         self.__amy_discord = AmyDiscord()
         self.__amy_gpt = AmyGPT()
+
+        self.__R = discord_configs.response_threshold
 
     def activate(self):
         """
@@ -37,6 +40,7 @@ class Amy:
         amycommands.leave_callback = self.handle_leave
         amycommands.echo_callback = self.handle_echo
         amycommands.activity_callback = self.handle_activity_update
+        amycommands.r_callback = self.handle_R_update
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
@@ -52,7 +56,8 @@ class Amy:
         weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 25 else message.content[:25])
         log.log_weight(message.content, weight)
         # ensures message meets required parameters for amy to respond
-        if not (abs(weight) >= 0.6 or self.__amy_discord.user in message.mentions or
+        if not (abs(weight) >= self.__R or
+                self.__amy_discord.user in message.mentions or
                 message.channel.type == discord.ChannelType.private or
                 (message.reference.cached_message.author == self.__amy_discord.user if message.reference else False)):
             return
@@ -113,6 +118,14 @@ class Amy:
         :param content: message content to echo
         """
         await self.__amy_discord.send_message(channel, content)
+
+    def handle_R_update(self, value: float | None) -> float:
+        if value is not None:
+            value = -1.0 if value < -1.0 else round(value, 2) if value < 1.0 else 1.0
+        else:
+            value = discord_configs.response_threshold
+        self.__R = value
+        return value
 
     @tasks.loop(minutes=6)
     async def update_activity(self) -> None:
