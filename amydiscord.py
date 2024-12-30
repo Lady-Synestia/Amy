@@ -44,6 +44,7 @@ class AmyDiscord(discord.Client):
         self.__tree.add_command(amycommands.join, guilds=my_guilds)
         self.__tree.add_command(amycommands.say, guilds=my_guilds)
         self.__tree.add_command(amycommands.leave, guilds=my_guilds)
+        self.__tree.add_command(amycommands.echo, guilds=my_guilds)
 
         self.run(BOT_TOKEN)
 

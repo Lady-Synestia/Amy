@@ -36,6 +36,7 @@ class Amy:
         amycommands.join_callback = self.handle_join
         amycommands.say_callback = self.handle_speech
         amycommands.leave_callback = self.handle_leave
+        amycommands.echo_callback = self.handle_echo
 
         self.__amy_discord.start_client(self.handle_discord_message, custom_status, wakeup_message)
 
@@ -99,3 +100,11 @@ class Amy:
         """
         file_path = self.__amy_gpt.make_voice_request(to_say)
         await self.__amy_discord.say(file_path, to_say)
+
+    async def handle_echo(self, channel: discord.TextChannel, content: str) -> None:
+        """
+        echoes a message as Amy
+        :param channel: channel to echo in
+        :param content: message content to echo
+        """
+        await self.__amy_discord.send_message(channel, content)
