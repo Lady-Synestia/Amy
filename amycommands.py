@@ -1,6 +1,8 @@
 """
 Storing Amy's discord application commands
 """
+
+from enum import Enum
 import discord
 from discord import app_commands, Interaction
 from typing import Callable

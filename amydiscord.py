@@ -117,7 +117,8 @@ class AmyDiscord(discord.Client):
         # prevents Amy from responding to her own messages
         if (message.author == self.user or
                 message.channel.id in configs.ignored_ids or
-                message.author.id in configs.ignored_ids):
+                message.author.id in configs.ignored_ids or
+                message.content == ""):
             return
 
         await self.__message_callback(message)

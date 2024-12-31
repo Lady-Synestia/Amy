@@ -53,14 +53,14 @@ class Amy:
         :param vc: if the bot is connected to a voice channel or not
         """
 
-        weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 25 else message.content[:25])
-        log.log_weight(message.content, weight)
         # ensures message meets required parameters for amy to respond
-        if not (abs(weight) >= self.__R or
-                self.__amy_discord.user in message.mentions or
+        if not (self.__amy_discord.user in message.mentions or
                 message.channel.type == discord.ChannelType.private or
                 (message.reference.cached_message.author == self.__amy_discord.user if message.reference else False)):
-            return
+            weight = self.__amy_gpt.make_weight_request(message.content if len(message.content) < 25 else message.content[:25])
+            log.log_weight(message.content, weight)
+            if abs(weight) < self.__R:
+                return
 
         log.log_user_message(message)
 
