@@ -65,7 +65,7 @@ class Amy:
         log.log_user_message(message)
 
         # collecting amy's stored messages with the new message
-        input_messages = self.__amy_memory.memories + [
+        input_messages = self.__amy_memory.get_memories(message.channel.id) + [
             {
                 "role": role,
                 "content": message.content
